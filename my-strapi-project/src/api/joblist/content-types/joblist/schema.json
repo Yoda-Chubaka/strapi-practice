@@ -4,7 +4,8 @@
   "info": {
     "singularName": "joblist",
     "pluralName": "joblists",
-    "displayName": "Joblist"
+    "displayName": "Joblist",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true

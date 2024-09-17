@@ -403,6 +403,7 @@ export interface ApiJoblistJoblist extends Schema.CollectionType {
     singularName: 'joblist';
     pluralName: 'joblists';
     displayName: 'Joblist';
+    description: '';
   };
   options: {
     draftAndPublish: true;
