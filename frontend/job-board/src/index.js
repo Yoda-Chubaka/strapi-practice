@@ -1,19 +1,25 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { BrowserRouter,Routes,Route} from 'react-router-dom';
-import Apply from './pages/apply';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import Expenses from "./pages/login";
+// import Test from "./pages/test";
+import Dashboard from "./pages/dashboard";
+import reportWebVitals from "./reportWebVitals";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Apply from "./pages/apply";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-     <BrowserRouter>
-     <Routes>
-      <Route path="/" element={<App />} />
-      <Route path="apply" element={<Apply />} />
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="login" element={<Expenses />} />
+        {/* <Route path="test" element={<Test />} /> */}
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="apply" element={<Apply />} />
+      </Routes>
     </BrowserRouter>
   </React.StrictMode>
 );
