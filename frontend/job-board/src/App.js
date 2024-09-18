@@ -16,6 +16,7 @@ function App() {
         console.log("Error while trying to fetch jobs list: " + err)
       );
   }
+
   useEffect(() => {
     update();
   }, []);
@@ -32,7 +33,6 @@ function App() {
           <div className="menu1">
             <Link to="/">Job Board</Link>
           </div>
-
           <div className="menu2">
             <Link to="/login">Login</Link>
           </div>
@@ -47,7 +47,7 @@ function App() {
         <div className="filter">
           <br />
           <div>
-            <button className="filter2 btn btn-info">filter Job list</button>
+            <button className="filter2 btn btn-info">Filter Job List</button>
             <br />
             <br />
             <form className="filter3" method="get">
@@ -64,17 +64,31 @@ function App() {
               <input
                 type="radio"
                 name="c"
-                value="Backend"
+                value="part time"
                 onChange={(event) =>
                   setSearch(event.target.value.toLowerCase())
                 }
               />
               <label>Part Time</label>
               <br />
-              <input type="radio" name="c" value="Internship" />
+              <input
+                type="radio"
+                name="c"
+                value="internship"
+                onChange={(event) =>
+                  setSearch(event.target.value.toLowerCase())
+                }
+              />
               <label>Internship</label>
               <br />
-              <input type="radio" name="c" />
+              <input
+                type="radio"
+                name="c"
+                value="freelance"
+                onChange={(event) =>
+                  setSearch(event.target.value.toLowerCase())
+                }
+              />
               <label>Freelance</label>
             </form>
           </div>
@@ -104,7 +118,7 @@ function App() {
               const filter = JSON.stringify(todo.attributes).toLowerCase();
               if (filter.includes(search)) {
                 return (
-                  <div key={i}>
+                  <div key={todo.id}>
                     <div>
                       <div className="detaills">
                         <img
@@ -116,7 +130,6 @@ function App() {
                             {todo.attributes.JobPosition}
                           </span>
                           <span className="right">
-                            {" "}
                             {todo.attributes.Location}
                           </span>
                           <span className="span2">
@@ -135,12 +148,12 @@ function App() {
                         </a>
                         <div className="ap2">{todo.attributes.Experience}</div>
                       </div>
-                    </div>{" "}
+                    </div>
                     <br />
                   </div>
                 );
-              } else {
               }
+              return null;
             })}
         </div>
       </div>

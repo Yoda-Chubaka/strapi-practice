@@ -4,26 +4,27 @@ import { Link } from "react-router-dom";
 function Apply() {
   const queryParams = new URLSearchParams(window.location.search);
   const jobid = queryParams.get("jobid");
-  const [job, setJob] = useState([]);
+  const [job, setJob] = useState({});
   const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
   const [link, setLink] = useState("");
   const [message, setMessage] = useState("");
 
   const update = async () => {
-    fetch("http://localhost:1337/api/joblists/" + jobid)
-      .then((res) => res.json())
-      .then((job_info) => {
-        setJob(job_info.data.attributes);
-        // console.log(job_info.data.attributes);
-      });
+    try {
+      const res = await fetch("http://localhost:1337/api/joblists/" + jobid);
+      const job_info = await res.json();
+      setJob(job_info.data.attributes);
+    } catch (error) {
+      console.error("Error fetching job data:", error);
+    }
   };
+
   useEffect(() => {
     update();
-    console.log(job);
-  }, []);
+  }, [jobid]);
 
-  const subbmit = async () => {
+  const submit = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -39,11 +40,12 @@ function Apply() {
       }),
     };
 
-    fetch("http://localhost:1337/api/applicantlists", requestOptions).then(
-      (response) => response.json()
-    );
-
-    alert("Application Submited Successful...");
+    try {
+      await fetch("http://localhost:1337/api/applicantlists", requestOptions);
+      alert("Application Submitted Successfully...");
+    } catch (error) {
+      console.error("Error submitting application:", error);
+    }
   };
 
   return (
@@ -58,7 +60,6 @@ function Apply() {
           <div className="menu1">
             <Link to="/">Job Board</Link>
           </div>
-
           <div className="menu2">
             <Link to="/login">Login</Link>
           </div>
@@ -97,11 +98,10 @@ function Apply() {
                   marginLeft: "44%",
                 }}
               />
-              {/* </div> */}
               <div
                 className={{
                   float: "left",
-                  marwginTop: "27px",
+                  marginTop: "27px",
                   marginLeft: "18px",
                   width: "100%",
                 }}
@@ -111,7 +111,6 @@ function Apply() {
                     <b>{job.JobPosition}</b>
                   </span>
                   <br />
-
                   <span className="span1_">{job.Location}</span>
                   <br />
                   <br />
@@ -142,7 +141,7 @@ function Apply() {
         </div>
 
         <div
-          clas="job2"
+          className="job2"
           style={{
             float: "right",
             marginLeft: "20px",
@@ -197,7 +196,7 @@ function Apply() {
                       type="url"
                       onChange={(event) => setLink(event.target.value)}
                       className="form-control"
-                      placeholder="Link to  Your Portfolio"
+                      placeholder="Link to Your Portfolio"
                       style={{ borderRadius: "10px" }}
                       id="usr"
                     />
@@ -213,10 +212,9 @@ function Apply() {
                       style={{ borderRadius: "10px" }}
                     ></textarea>
                     <br />
-
                     <input
                       type="button"
-                      onClick={() => subbmit()}
+                      onClick={() => submit()}
                       className="form-control"
                       value="Submit"
                     />

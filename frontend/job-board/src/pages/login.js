@@ -1,30 +1,29 @@
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 export default function Expenses() {
   const queryParams = new URLSearchParams(window.location.search);
   const id = queryParams.get("id");
   const [auth, setAuth] = useState("");
-  const [Email, setEmail] = useState("test@gmail.com");
-  const [Password, setPassword] = useState("pass123");
-  const [submit, setsubmit] = useState();
+  const [email, setEmail] = useState("test@gmail.com");
+  const [password, setPassword] = useState("pass123");
+
   const update = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ identifier: Email, password: Password }),
+      body: JSON.stringify({ identifier: email, password: password }),
     };
-    fetch("http://localhost:1337/api/auth/local", requestOptions)
-      .then((response) => response.json())
-      .then((data) => setAuth(data));
+    try {
+      const response = await fetch("http://localhost:1337/api/auth/local", requestOptions);
+      const data = await response.json();
+      setAuth(data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
-  console.log(auth.jwt);
-  // if (typeof auth.jwt !== "undefined") {
-  //   const url = "/dashboard?token=" + auth.jwt;
-  //   return <Navigate to={url} />;
-  // }
+  console.log("auth.jwt:", auth.jwt);
 
   const navigate = useNavigate();
 
@@ -33,14 +32,14 @@ export default function Expenses() {
       const url = `/dashboard?token=${auth.jwt}`;
       navigate(url);
     }
-  }, [auth.jwt]);
+  }, [auth.jwt, navigate]);
 
   return (
     <div className="container">
       <center>
         <div style={{ width: "270px", marginLeft: "0px", marginTop: "200px" }}>
           <h2>Login</h2>
-          <p>login as{id} agent</p>
+          <p>login as {id} agent</p>
           <form role="form">
             <div className="form-group">
               <label htmlFor="usr">Email:</label>
@@ -60,16 +59,16 @@ export default function Expenses() {
                 onChange={(event) => setPassword(event.target.value)}
               />
             </div>
-            <div className="form-groug">
+            <div className="form-group">
               <br />
-              <a
+              <button
+                type="button"
                 className="form-control"
                 style={{ cursor: "pointer" }}
-                value="login"
                 onClick={() => update()}
               >
                 Login
-              </a>
+              </button>
             </div>
           </form>
         </div>

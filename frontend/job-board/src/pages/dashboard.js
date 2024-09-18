@@ -1,34 +1,29 @@
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 
 export default function Dashboard() {
   const [state, setState] = useState("");
   const [Applicant, setApplicant] = useState([]);
-  const [jobTitle, setjobTitle] = useState("");
-  const [jobCategory, setjobCategory] = useState("");
-  const [jobLocation, setjobLocation] = useState("");
-  const [jobDescription, setjobDescription] = useState("");
-  const [jobExpreience, setjobExpreience] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [jobCategory, setJobCategory] = useState("");
+  const [jobLocation, setJobLocation] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
+  const [jobExperience, setJobExperience] = useState("");
   const [openJob, setOpenJob] = useState([]);
   const queryParams = new URLSearchParams(window.location.search);
   const token = queryParams.get("token");
 
-  function Applicants() {
-    fetch("http://localhost:1337/api/applicantlists")
-      .then((res) => res.json())
-      .then((list) => {
-        console.log(list.data);
-        setApplicant(list.data);
-      });
+  async function fetchApplicants() {
+    const res = await fetch("http://localhost:1337/api/applicantlists");
+    const list = await res.json();
+    console.log(list.data);
+    setApplicant(list.data);
   }
 
-  function open() {
-    fetch("http://localhost:1337/api/joblists")
-      .then((res) => res.json())
-      .then((list) => {
-        setOpenJob(list.data);
-      });
+  async function fetchOpenJobs() {
+    const res = await fetch("http://localhost:1337/api/joblists");
+    const list = await res.json();
+    setOpenJob(list.data);
   }
 
   const update = async (id) => {
@@ -38,32 +33,28 @@ export default function Dashboard() {
       body: '{"data":{"Status":"Approved"}}',
     };
     console.log(requestOptions);
-    fetch("http://localhost:1337/api/applicantlists/" + id, requestOptions)
-      .then((response) => response.json())
-      .then((data) => this.setState("1"));
+    const response = await fetch("http://localhost:1337/api/applicantlists/" + id, requestOptions);
+    const data = await response.json();
+    setState("1");
   };
+
   const delete1 = async (id) => {
     const requestOptions = {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     };
     console.log(requestOptions);
-    fetch("http://localhost:1337/api/applicantlists/" + id, requestOptions)
-      .then((response) => response.json())
-      .then((data) => this.setState("1"));
+    const response = await fetch("http://localhost:1337/api/applicantlists/" + id, requestOptions);
+    const data = await response.json();
+    setState("1");
   };
 
   useEffect(() => {
-    Applicants();
-    open();
+    fetchApplicants();
+    fetchOpenJobs();
   }, []);
 
-  //   if (typeof Applicant.id === "undefined") {
-  //     const url = "/login";
-  //     return <Navigate to={url} />;
-  //   }
-
-  const addjob = async () => {
+  const addJob = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -72,20 +63,16 @@ export default function Dashboard() {
           JobPosition: jobTitle,
           Category: jobCategory,
           Location: jobLocation,
-          Experience: jobExpreience,
+          Experience: jobExperience,
           JobDescription: jobDescription,
           JobStatus: "Open",
           Agency: "Strapi",
         },
       }),
     };
-    // console.log(requestOptions)
-    fetch("http://localhost:1337/api/joblists", requestOptions).then(
-      (response) => response.json()
-    );
-    //  .then(data => this.setState(data ));
-
-    alert("Job Added Successful...");
+    const response = await fetch("http://localhost:1337/api/joblists", requestOptions);
+    const data = await response.json();
+    alert("Job Added Successfully...");
   };
 
   return (
@@ -100,7 +87,6 @@ export default function Dashboard() {
           <div className="menu1">
             <Link to="/">Job Board</Link>
           </div>
-
           <div className="menu2">
             <Link to="/">Logout</Link>
           </div>
@@ -111,12 +97,11 @@ export default function Dashboard() {
 
       <div className="filter_">
         <br />
-
         <div className="filter2_">
           <span>Open Positions</span>
           <hr />
           {openJob.map((list, i) => {
-            if (list.attributes.JobStatus == "Open") {
+            if (list.attributes.JobStatus === "Open") {
               return (
                 <div key={i}>
                   <span style={{ fontSize: "17px" }}>
@@ -133,63 +118,51 @@ export default function Dashboard() {
       <div className="job2">
         <br />
         <br />
-
-        {Applicant.map((list, i) => {
-          {
-            return (
-              <div key={i}>
-                <div>
-                  <div className="detaills_">
-                    <div className="logo_"></div>
-                    <div className="description">
-                      <span className="span1_">{list.attributes.Name}</span>
-                      <span style={{ float: "right" }}>
-                        {list.attributes.Status}
-                      </span>
-                      <br />
-                      <span className="span1_">{list.attributes.Email}</span>
-                      <textarea
-                        style={{ borderWidth: "0px" }}
-                        readOnly
-                        id=""
-                        cols="70"
-                        rows="3"
-                        defaultValue={list.attributes.Message}
-                      />
-                      <center>
-                        <a
-                          target={"_blank"}
-                          href={list.attributes.Portfolio_Link}
-                        >
-                          View Portfolio
-                        </a>{" "}
-                        <br />
-                        <button
-                          className="btn-success"
-                          onClick={() => update(list.id)}
-                        >
-                          Approve
-                        </button>
-                        <button
-                          className="btn-danger"
-                          onClick={() => delete1(list.id)}
-                        >
-                          Decline
-                        </button>
-                      </center>
-                    </div>
-                  </div>
-                </div>{" "}
+        {Applicant.map((list, i) => (
+          <div key={i}>
+            <div className="detaills_">
+              <div className="logo_"></div>
+              <div className="description">
+                <span className="span1_">{list.attributes.Name}</span>
+                <span style={{ float: "right" }}>
+                  {list.attributes.Status}
+                </span>
                 <br />
+                <span className="span1_">{list.attributes.Email}</span>
+                <textarea
+                  style={{ borderWidth: "0px" }}
+                  readOnly
+                  cols="70"
+                  rows="3"
+                  defaultValue={list.attributes.Message}
+                />
+                <center>
+                  <a target={"_blank"} href={list.attributes.Portfolio_Link}>
+                    View Portfolio
+                  </a>
+                  <br />
+                  <button
+                    className="btn-success"
+                    onClick={() => update(list.id)}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className="btn-danger"
+                    onClick={() => delete1(list.id)}
+                  >
+                    Decline
+                  </button>
+                </center>
               </div>
-            );
-          }
-        })}
+            </div>
+            <br />
+          </div>
+        ))}
       </div>
 
       <div className="filt">
         <br />
-
         <div className="filter2_">
           <span>Post New Position</span>
           <br />
@@ -197,35 +170,32 @@ export default function Dashboard() {
           <form className="filter3_" method="get">
             <input
               type="text"
-              onChange={(event) => setjobTitle(event.target.value)}
+              onChange={(event) => setJobTitle(event.target.value)}
               placeholder="Job Title"
               style={{ width: "200px", borderRadius: "10px" }}
             />
             <input
               type="text"
-              onChange={(event) => setjobCategory(event.target.value)}
+              onChange={(event) => setJobCategory(event.target.value)}
               placeholder="Enter Job Category"
               style={{ width: "200px", borderRadius: "10px" }}
             />
             <br />
             <input
               type="text"
-              onChange={(event) => setjobLocation(event.target.value)}
+              onChange={(event) => setJobLocation(event.target.value)}
               placeholder="Location"
               style={{ width: "200px", borderRadius: "10px" }}
-              id=""
             />
             <br />
-
             <textarea
-              onChange={(event) => setjobDescription(event.target.value)}
+              onChange={(event) => setJobDescription(event.target.value)}
               style={{ width: "200px", borderRadius: "10px" }}
               placeholder="Job description"
             ></textarea>
             <br />
-
             <select
-              onChange={(event) => setjobExpreience(event.target.value)}
+              onChange={(event) => setJobExperience(event.target.value)}
               className="select"
             >
               <option disabled>Requirement</option>
@@ -241,11 +211,10 @@ export default function Dashboard() {
             </select>
             <br />
             <br />
-
             <center>
               <input
                 type="button"
-                onClick={() => addjob()}
+                onClick={() => addJob()}
                 className="form-control"
                 value="Add Job"
               />
